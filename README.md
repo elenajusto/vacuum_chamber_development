@@ -11,7 +11,7 @@ for testing avionics sensors and hardware used onboard high powered rockets.
 ## Block Diagram
 Below is a diagram of the envisioned system setup for the larger, workshop based system:
 
-![image](https://github.com/elenajusto/vacuum_chamber_development/assets/56148816/15539531-886d-4142-956d-1030d121744a)
+![image](https://github.com/elenajusto/vacuum_chamber_development/assets/56148816/09236080-10e2-471c-92ee-ac212812bd64)
 
 ## Prototype 2.1 - Arduino
 Prototype 2.1 is running on the Arduino platform. It has currently demonstrated very basic
