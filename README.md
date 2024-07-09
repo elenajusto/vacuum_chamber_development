@@ -28,3 +28,9 @@ desktop chamber.
 
 ### Prototype 2.1 - Hardware Setup
 ![image](https://github.com/elenajusto/vacuum_chamber_development/assets/56148816/57d55936-a541-4886-86e8-34250e34dbc2)
+
+### Prototype 2.1 - Serial Data Stream
+Data captured during initial testing of basic altitude holding.
+
+https://github.com/elenajusto/vacuum_chamber_development/assets/56148816/23f36750-fabb-497a-bf77-5766bd89bf42
+
