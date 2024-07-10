@@ -12,11 +12,16 @@ int enableA = 2;                      // Enable A pin on L298 H-Bridge
 int in1 = 3;                          // Motor A IN1 pin on L298 H-Bridge
 int in2 = 5;                          // Motor A IN2 pin on L298 H-Bridge
 
+unsigned long time_now = 0;
+
+int pot = A0;                         // analog ports are named An
+
 /* Function Prototypes */
 void setPressureSensor();             // Setup pressure sensor
 void getPressureReading();            // Print out pressure reading
 void setLCD();                        // Setup LCD
 void setMotorA();                     // Setup H-bridge pins to control motor A
+int getPot();                         // Returns mapped potentiometer value for analogWrite
 
 /* Setup */
 void setup()
@@ -26,6 +31,7 @@ void setup()
   while (!Serial);                     // Wait for serial monitor
   Serial.println("\nSerial Online");
 
+  setLCD();
   setPressureSensor();
   setMotorA();
 }
@@ -33,28 +39,16 @@ void setup()
 /* Main Loop */
 void loop()
 {
-  setLCD();
+  time_now = millis();
+
   getPressureReading();
 
-  lcd.setCursor(1,0);
-  //lcd.print("Temp: ");
-  lcd.print(bmp.readTemperature());
-  lcd.print(" *C");
-  
-  lcd.setCursor(1,1);
-  //lcd.print(" Pres: ");
-  lcd.print(bmp.readPressure());
-  lcd.print(" Pa");
-  
-  //delay(1000);
+  Serial.println(getPot());
 
-  if (bmp.readAltitude(1013.25) < 200){
-    digitalWrite(in1, HIGH);
-    digitalWrite(in2, LOW);
-  } else if (bmp.readAltitude(1013.25) > 200) {
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, LOW);
-  }
+  analogWrite(in1, getPot());
+  analogWrite(in2, LOW);
+  
+  delay(500);
 }
 
 /* Function Definitions */
@@ -83,9 +77,9 @@ void setPressureSensor()
 
 void getPressureReading()
 {
-  Serial.print(F("Temperature = "));
-  Serial.print(bmp.readTemperature());
-  Serial.println(" *C");
+  //Serial.print(F("Temperature = "));
+  //Serial.print(bmp.readTemperature());
+  //Serial.println(" *C");
 
   Serial.print(F("Pressure = "));
   Serial.print(bmp.readPressure());
@@ -95,7 +89,7 @@ void getPressureReading()
   Serial.print(bmp.readAltitude(1013.25)); /* Adjusted to local forecast! */
   Serial.println(" m");
 
-  Serial.println();
+  //Serial.println();
 }
 
 void setLCD()
@@ -110,4 +104,11 @@ void setMotorA()
   pinMode(in1, OUTPUT);
   pinMode(in2, OUTPUT);
   digitalWrite(enableA, HIGH);
+}
+
+int getPot() 
+{
+  int sensorValue = analogRead(pot);
+  int mappedValue = map(sensorValue, 0, 1023, 0, 255);
+  return mappedValue;
 }
