@@ -54,33 +54,36 @@ void setup()
 /* Main Loop */
 void loop()
 {
-  // Debug Information
-  printAltitudeReading();
-  Serial.print("     PWM Output = ");
-  Serial.println(getPot());
+  
+  /* Control Chamber Pressure */
 
-  // Control Chamber Pressure
-  analogMotorControl(getPot());
+  // Manual Control
+  //analogMotorControl(getPot());
 
-  /* PID Control Loop */
-  /*
-  int val = bmp.readAltitude(1013.25);          // Get value from sensor (feedback)
+  // PID Control
+  // Get value from sensor (feedback)
+  int val = bmp.readAltitude(1013.25);         
 
-  int error = setPoint - val;                   // Calculating PID terms
+  // Calculating PID terms
+  int error = setPoint - val;                   
   integral = integral + (error * interval);
   int derivative = (error - error_prev) / interval;
   int output = (k_p * error) + (k_i * integral) + (k_d * derivative);
 
+  // Get error
   error_prev = error;
 
-  analogWrite(in1, output);
-  analogWrite(in2, LOW);
+  // Send command to actuator (vacuum pump motor)
+  analogMotorControl(output);
 
+  // Debug
   Serial.print("PID Output: ");
-  Serial.print(output);
+  Serial.println(output);
+
+  printAltitudeReading();
 
   delay(interval);
-  */
+  
 }
 
 /* Function Definitions */
