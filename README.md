@@ -24,7 +24,7 @@ desktop chamber.
 - AdafruitBMP280
 
 ### Prototype 2.1 - Wiring
-![image](https://github.com/elenajusto/vacuum_chamber_development/assets/56148816/a3d6ea6c-3ae8-4845-89b3-ec54038836ca)
+![image](https://github.com/user-attachments/assets/e25cfc71-2c36-47e8-9ddd-4425ce237e20)
 
 ### Prototype 2.1 - Hardware Setup
 ![image](https://github.com/elenajusto/vacuum_chamber_development/assets/56148816/57d55936-a541-4886-86e8-34250e34dbc2)
