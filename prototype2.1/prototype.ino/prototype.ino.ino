@@ -8,20 +8,34 @@
 Adafruit_BMP280 bmp;                  // Instantiate pressure sensor
 LiquidCrystal_I2C lcd(0x27,20,4);     // Instantiate LCD - 0x27 for a 16 chars and 2 line display
 
-int enableA = 2;                      // Enable A pin on L298 H-Bridge
+int enableA = 1;                      // Enable A pin on L298 H-Bridge
 int in1 = 3;                          // Motor A IN1 pin on L298 H-Bridge
 int in2 = 5;                          // Motor A IN2 pin on L298 H-Bridge
+int pot = A0;                         // Potentiometer pin
 
-unsigned long time_now = 0;
+unsigned long time_now = 0;           // Tracking time for millis()
 
-int pot = A0;                         // analog ports are named An
+int k_p = 2;                          // Proportional Constant (PID Control)
+int k_i = 0.1;                        // Integral Constant (PID Control)
+int k_d = 0.1;                        // Derivative Constant (PID Control)
+int interval = 500;                   // e.g., 1ms
 
+int setPoint = 212;
+int error_prev = 0;
+int integral = 0;
+  
 /* Function Prototypes */
-void setPressureSensor();             // Setup pressure sensor
-void getPressureReading();            // Print out pressure reading
-void setLCD();                        // Setup LCD
-void setMotorA();                     // Setup H-bridge pins to control motor A
-int getPot();                         // Returns mapped potentiometer value for analogWrite
+void setPressureSensor();                   // Setup pressure sensor
+void setLCD();                              // Setup LCD
+void setMotorA();                           // Setup H-bridge pins to control motor A
+
+void printTemperatureReading();
+void printPressureReading();
+void printAltitudeReading();
+
+int getPot();                               // Returns mapped potentiometer value for analogWrite
+
+void analogMotorControl(int analogValue);   // Control vaccum suction based on potentiometer
 
 /* Setup */
 void setup()
@@ -34,21 +48,39 @@ void setup()
   setLCD();
   setPressureSensor();
   setMotorA();
+
 }
 
 /* Main Loop */
 void loop()
 {
-  time_now = millis();
-
-  getPressureReading();
-
+  // Debug Information
+  printAltitudeReading();
+  Serial.print("     PWM Output = ");
   Serial.println(getPot());
 
-  analogWrite(in1, getPot());
+  // Control Chamber Pressure
+  analogMotorControl(getPot());
+
+  /* PID Control Loop */
+  /*
+  int val = bmp.readAltitude(1013.25);          // Get value from sensor (feedback)
+
+  int error = setPoint - val;                   // Calculating PID terms
+  integral = integral + (error * interval);
+  int derivative = (error - error_prev) / interval;
+  int output = (k_p * error) + (k_i * integral) + (k_d * derivative);
+
+  error_prev = error;
+
+  analogWrite(in1, output);
   analogWrite(in2, LOW);
-  
-  delay(500);
+
+  Serial.print("PID Output: ");
+  Serial.print(output);
+
+  delay(interval);
+  */
 }
 
 /* Function Definitions */
@@ -75,21 +107,25 @@ void setPressureSensor()
                   Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
 }
 
-void getPressureReading()
+void printTemperatureReading()
 {
-  //Serial.print(F("Temperature = "));
-  //Serial.print(bmp.readTemperature());
-  //Serial.println(" *C");
+  Serial.print(F("Temperature = "));
+  Serial.print(bmp.readTemperature());
+  Serial.println(" *C");
+}
 
+void printPressureReading()
+{
   Serial.print(F("Pressure = "));
   Serial.print(bmp.readPressure());
   Serial.println(" Pa");
+}
 
+void printAltitudeReading()
+{
   Serial.print(F("Approx altitude = "));
   Serial.print(bmp.readAltitude(1013.25)); /* Adjusted to local forecast! */
   Serial.println(" m");
-
-  //Serial.println();
 }
 
 void setLCD()
@@ -111,4 +147,10 @@ int getPot()
   int sensorValue = analogRead(pot);
   int mappedValue = map(sensorValue, 0, 1023, 0, 255);
   return mappedValue;
+}
+
+void analogMotorControl(int analogValue)
+{
+  analogWrite(in1, analogValue);
+  analogWrite(in2, LOW);
 }
