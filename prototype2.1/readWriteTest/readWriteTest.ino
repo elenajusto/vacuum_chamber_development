@@ -18,11 +18,17 @@
 
 */
 
+/* Includes */
 #include <SPI.h>
 #include <SD.h>
 
+/* Variables */
 File myFile;
 
+/* Function Prototypes */
+void readFromCard();
+
+/* Main Program */
 void setup() {
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
@@ -30,7 +36,18 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
+  // Read from Card
+  readFromCard();
+}
 
+void loop() {
+  // nothing happens after setup
+}
+
+
+/* Function Definitions */
+void readFromCard()
+{
   Serial.print("Initializing SD card...");
 
   if (!SD.begin(4)) {
@@ -54,8 +71,4 @@ void setup() {
     // if the file didn't open, print an error:
     Serial.println("error opening test.txt");
   }
-}
-
-void loop() {
-  // nothing happens after setup
 }
