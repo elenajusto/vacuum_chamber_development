@@ -40,7 +40,7 @@ void setup() {
   Serial.println("initialization done.");
 
   // re-open the file for reading:
-  myFile = SD.open("EXAMPL~2.TXT");
+  myFile = SD.open("OUTPUT.TXT");
   if (myFile) {
     Serial.println("examplecurve.txt:");
 
