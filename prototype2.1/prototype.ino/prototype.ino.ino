@@ -3,10 +3,15 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>        // LCD driver
 #include <Adafruit_BMP280.h>          // Pressure sensor driver
+#include <SPI.h>                      // SD card communications
+#include <SD.h>                       // SD card communications
 
 /* Variables*/
 Adafruit_BMP280 bmp;                  // Instantiate pressure sensor
 LiquidCrystal_I2C lcd(0x27,20,4);     // Instantiate LCD - 0x27 for a 16 chars and 2 line display
+File myFile;                     // File instance
+
+String txtBuffer;                // String to hold one line of text
 
 int enableA = 1;                      // Enable A pin on L298 H-Bridge
 int in1 = 3;                          // Motor A IN1 pin on L298 H-Bridge
@@ -28,14 +33,14 @@ int integral = 0;
 void setPressureSensor();                   // Setup pressure sensor
 void setLCD();                              // Setup LCD
 void setMotorA();                           // Setup H-bridge pins to control motor A
-
 void printTemperatureReading();
 void printPressureReading();
 void printAltitudeReading();
-
-int getPot();                               // Returns mapped potentiometer value for analogWrite
-
-void analogMotorControl(int analogValue);   // Control vaccum suction based on potentiometer
+int getPot();                                               // Returns mapped potentiometer value for analogWrite
+void analogMotorControl(int analogValue);                   // Control vaccum suction based on potentiometer
+void readFromCard(String filename);                         // Read all data from input file
+void getDataSendCommand(String filename, String buffer);    // Get data and call actuator function
+void dummyActuator(int value);        
 
 /* Setup */
 void setup()
@@ -156,4 +161,81 @@ void analogMotorControl(int analogValue)
 {
   analogWrite(in1, analogValue);
   analogWrite(in2, LOW);
+}
+
+void readFromCard(String filename)
+{
+  Serial.print("Initializing SD card...");
+
+  if (!SD.begin(4)) {
+    Serial.println("initialization failed!");
+    while (1);
+  }
+  
+  Serial.println("initialization done.");
+
+  // re-open the file for reading:
+  myFile = SD.open(filename);
+  if (myFile) {
+
+    // read from the file until there's nothing else in it:
+    while (myFile.available()) {
+      Serial.write(myFile.read());
+    }
+    
+    // close the file:
+    myFile.close();
+    
+  } else {
+    // if the file didn't open, print an error:
+    Serial.println("error opening test.txt");
+  }
+}
+
+void getDataSendCommand(String filename, String buffer)
+{
+  Serial.print("Initializing SD card...");
+
+  if (!SD.begin(4)) {
+    Serial.println("initialization failed!");
+    while (1);
+  }
+  
+  Serial.println("initialization done.");
+
+  // re-open the file for reading:
+  myFile = SD.open(filename);
+  if (myFile) {
+
+    // read from the file until there's nothing else in it:
+    while (myFile.available()) {
+
+      // Write one line to buffer
+      txtBuffer = myFile.readStringUntil(',');
+      
+      // Print to serial monitor
+      Serial.println(txtBuffer);
+      
+      // Convert string to integer and position servo
+      dummyActuator( txtBuffer.toFloat() );
+      
+    }
+    
+    // close the file:
+    myFile.close();
+    
+  } else {
+    // if the file didn't open, print an error:
+    Serial.println("error opening test.txt");
+  }
+}
+
+void dummyActuator(int data)
+{
+  Serial.print("Sending ");
+  Serial.print(data);
+  Serial.println(" to actuator...");
+  delay(1000);
+  Serial.println("Actuation command done!");
+  delay(500);
 }
