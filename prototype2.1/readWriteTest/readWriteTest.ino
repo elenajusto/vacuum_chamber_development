@@ -25,7 +25,7 @@ void setup() {
   }
 
   // Read from Card
-  readFromCard("OUTPUT.TXT", txtBuffer);
+  readFromCard("OUTPUT.TXT");
 }
 
 void loop() {
@@ -34,7 +34,7 @@ void loop() {
 
 
 /* Function Definitions */
-void readFromCard(String filename, String buffer)
+void readFromCard(String filename)
 {
   Serial.print("Initializing SD card...");
 
