@@ -8,17 +8,12 @@
 #include <SD.h>
 
 /* Variables */
-File myFile;
+File myFile;                     // File instance
 
-int numberOfTime;             // Store number of time measurements from csv
-int numberOfAltitude;         // Store number of altitude measurements from csv
-int numberOfPressure;         // Store number of pressure measurements from csv
+String txtBuffer;                // String to hold one line of text
 
 /* Function Prototypes */
-void readFromCard();
-void getTimeNumber();
-void getAltitudeNumber();
-void getPressureNumber();
+void readFromCard(String filename);      // Read all data from input file
 
 /* Main Program */
 void setup() {
@@ -30,7 +25,7 @@ void setup() {
   }
 
   // Read from Card
-  readFromCard();
+  readFromCard("OUTPUT.TXT", txtBuffer);
 }
 
 void loop() {
@@ -39,7 +34,7 @@ void loop() {
 
 
 /* Function Definitions */
-void readFromCard()
+void readFromCard(String filename, String buffer)
 {
   Serial.print("Initializing SD card...");
 
@@ -47,12 +42,12 @@ void readFromCard()
     Serial.println("initialization failed!");
     while (1);
   }
+  
   Serial.println("initialization done.");
 
   // re-open the file for reading:
-  myFile = SD.open("OUTPUT.TXT");
+  myFile = SD.open(filename);
   if (myFile) {
-    Serial.println("examplecurve.txt:");
 
     // read from the file until there's nothing else in it:
     while (myFile.available()) {
@@ -66,19 +61,4 @@ void readFromCard()
     // if the file didn't open, print an error:
     Serial.println("error opening test.txt");
   }
-}
-
-void getTimeNumber()
-{
-  
-}
-
-void getAltitudeNumber()
-{
-  
-}
-
-void getPressureNumber()
-{
-  
 }
