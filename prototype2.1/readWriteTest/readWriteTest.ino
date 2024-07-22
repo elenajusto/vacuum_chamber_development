@@ -13,9 +13,10 @@ File myFile;                     // File instance
 String txtBuffer;                // String to hold one line of text
 
 /* Function Prototypes */
-void readFromCard(String filename);      // Read all data from input file
+void readFromCard(String filename);                         // Read all data from input file
+void getDataSendCommand(String filename, String buffer);    // Get data and call actuator function
+void dummyActuator(int value);                              // Simulate control of actuator 
 
-/* Main Program */
 void setup() {
   
   // Open serial communications and wait for port to open:
@@ -25,7 +26,10 @@ void setup() {
   }
 
   // Read from Card
-  readFromCard("OUTPUT.TXT");
+  //readFromCard("OUTPUT.TXT");
+
+  // Read data and send commands
+  getDataSendCommand("OUTPUT.TXT", txtBuffer);
 }
 
 void loop() {
@@ -61,4 +65,52 @@ void readFromCard(String filename)
     // if the file didn't open, print an error:
     Serial.println("error opening test.txt");
   }
+}
+
+void getDataSendCommand(String filename, String buffer)
+{
+  Serial.print("Initializing SD card...");
+
+  if (!SD.begin(4)) {
+    Serial.println("initialization failed!");
+    while (1);
+  }
+  
+  Serial.println("initialization done.");
+
+  // re-open the file for reading:
+  myFile = SD.open(filename);
+  if (myFile) {
+
+    // read from the file until there's nothing else in it:
+    while (myFile.available()) {
+
+      // Write one line to buffer
+      txtBuffer = myFile.readStringUntil(',');
+      
+      // Print to serial monitor
+      Serial.println(txtBuffer);
+      
+      // Convert string to integer and position servo
+      dummyActuator( txtBuffer.toFloat() );
+      
+    }
+    
+    // close the file:
+    myFile.close();
+    
+  } else {
+    // if the file didn't open, print an error:
+    Serial.println("error opening test.txt");
+  }
+}
+
+void dummyActuator(int data)
+{
+  Serial.print("Sending ");
+  Serial.print(data);
+  Serial.println(" to actuator...");
+  delay(1000);
+  Serial.println("Actuation command done!");
+  delay(500);
 }
