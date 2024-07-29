@@ -1,18 +1,26 @@
+/* Libraries */
 #include <Arduino.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>        // LCD driver
+#include <Adafruit_BMP280.h>          // Pressure sensor driver
+#include <SPI.h>                      // SD card communications
+#include <SD.h>                       // SD card communications
 
-// put function declarations here:
-int myFunction(int, int);
+/* Variables */
 
+
+/* Function Prototypes */
+
+
+/* Main Program Setup*/
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+
 }
 
+/* Main Program Loop */
 void loop() {
-  // put your main code here, to run repeatedly:
+
 }
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
-}
+/* Function Definitions*/
+
